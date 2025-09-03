@@ -1,368 +1,635 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>أخبار العالم</title>
-  <style>
-    /* الخطوط والمساحات */
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0b1220; /* أزرق داكن مائل إلى الأسود */
-      color: white;
-      line-height: 1.6;
-      overflow-x: hidden;
-      position: relative;
-      min-height: 100vh;
-      padding-bottom: 50px;
-    }
-
-    /* خلفية متحركة - نجوم وشهب */
-    .stars, .shooting-stars {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* نجوم */
-    .stars {
-      background: transparent url('https://i.imgur.com/TPV4LoA.png') repeat;
-      background-size: contain;
-      animation: twinkle 20s linear infinite;
-      opacity: 0.8;
-    }
-
-    @keyframes twinkle {
-      0%, 100% {background-position: 0 0;}
-      50% {background-position: 10000px 5000px;}
-    }
-
-    /* شهب */
-    .shooting-star {
-      position: absolute;
-      width: 100px;
-      height: 2px;
-      background: linear-gradient(-45deg, white, rgba(255, 255, 255, 0));
-      border-radius: 100%;
-      opacity: 0;
-      animation: shooting 3s linear infinite;
-    }
-
-    @keyframes shooting {
-      0% {
-        transform: translateX(0) translateY(0) rotate(45deg);
-        opacity: 1;
-      }
-      100% {
-        transform: translateX(-500px) translateY(200px) rotate(45deg);
-        opacity: 0;
-      }
-    }
-
-    /* توليد الشهب بشكل ديناميكي */
-    /* ستتم إضافتها عبر جافاسكربت */
-
-    /* شريط التنقل */
-    header {
-      background-color: #1c293f;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-
-    /* الشعار */
-    .logo {
-      font-size: 1.8rem;
-      font-weight: bold;
-      color: #ffcc00;
-      user-select: none;
-    }
-
-    /* قائمة التنقل */
-    nav ul {
-      display: flex;
-      gap: 20px;
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      font-weight: bold;
-    }
-
-    nav ul li a {
-      color: white;
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-
-    nav ul li a:hover {
-      background-color: #ffcc00;
-      color: #0b1220;
-    }
-
-    /* مربع البحث */
-    .search-box {
-      position: relative;
-    }
-    .search-box input[type="text"] {
-      padding: 6px 10px;
-      border-radius: 20px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      width: 180px;
-      transition: width 0.4s ease;
-    }
-    .search-box input[type="text"]:focus {
-      width: 250px;
-    }
-
-    /* المحتوى الرئيسي */
-    main {
-      max-width: 1100px;
-      margin: 30px auto;
-      padding: 0 20px 50px 20px;
-      z-index: 1;
-      position: relative;
-    }
-
-    /* قسم الأخبار */
-    section {
-      margin-bottom: 50px;
-      background-color: rgba(255, 255, 255, 0.05);
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    /* عناوين الأقسام */
-    h2.section-title {
-      border-right: 6px solid #ffcc00;
-      padding-right: 15px;
-      margin-bottom: 25px;
-      font-size: 1.7rem;
-      font-weight: 700;
-    }
-
-    /* كل خبر */
-    article.news-item {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 30px;
-      background-color: rgba(255,255,255,0.12);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(255,204,0,0.3);
-      transition: box-shadow 0.3s ease;
-    }
-    article.news-item:hover {
-      box-shadow: 0 0 20px rgba(255,204,0,0.7);
-    }
-
-    /* صورة الخبر */
-    article.news-item img {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      aspect-ratio: 16 / 9;
-    }
-
-    /* عنوان الخبر */
-    article.news-item h3 {
-      font-size: 1.3rem;
-      margin: 15px 20px 10px 20px;
-      color: #ffcc00;
-    }
-
-    /* نص الخبر */
-    article.news-item p {
-      margin: 0 20px 20px 20px;
-      color: #ddd;
-    }
-
-    /* فاصل أفقي */
-    hr {
-      border: 0;
-      border-top: 1px solid #444;
-      margin: 40px 0;
-    }
-
-    /* استجابة لجميع الأجهزة */
-    @media (max-width: 768px){
-      nav ul {
-        gap: 10px;
-      }
-      .search-box input[type="text"] {
-        width: 140px;
-      }
-      .search-box input[type="text"]:focus {
-        width: 180px;
-      }
-      article.news-item h3 {
-        font-size: 1.1rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2023 Insights - Articles and Events</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        #night-sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to bottom, #000011 0%, #191970 50%, #000000 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out, moveStars 60s infinite linear;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        @keyframes moveStars {
+            from { transform: translateX(0vw); }
+            to { transform: translateX(-10vw); }
+        }
+        .meteor {
+            position: absolute;
+            width: 3px;
+            height: 30px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+            animation: shoot 4s infinite linear, fade 4s infinite ease-in-out;
+        }
+        @keyframes shoot {
+            from { transform: translateY(0vh) translateX(0vw); }
+            to { transform: translateY(150vh) translateX(-150vw); }
+        }
+        @keyframes fade {
+            0% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .fade-in { animation: fadeIn 2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hero-section { padding: 4rem 0; text-align: center; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; padding: 2rem 0; }
+        .feature-card { background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 2rem; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-10px); }
+    </style>
 </head>
-<body>
+<body class="bg-black text-white min-h-screen relative">
+    <div id="night-sky"></div>
+    <header class="bg-transparent text-white py-6 relative">
+        <nav class="container mx-auto flex justify-between items-center px-4">
+            <div class="font-bold text-2xl">2023 Insights</div>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="hover:text-blue-400 transition">Home</a></li>
+                <li><a href="#features" class="hover:text-blue-400 transition">Features</a></li>
+                <li><a href="about.html" class="hover:text-blue-400 transition">About</a></li>
+                <li><a href="articles.html" class="hover:text-blue-400 transition">Articles</a></li>
+                <li><a href="events.html" class="hover:text-blue-400 transition">Events</a></li>
+                <li><a href="gallery.html" class="hover:text-blue-400 transition">Gallery</a></li>
+                <li><a href="contact.html" class="hover:text-blue-400 transition">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
 
-  <!-- خلفية نجوم -->
-  <div class="stars"></div>
-  <div class="shooting-stars"></div>
-
-  <!-- الرأس والشعار والتنقل والبحث -->
-  <header>
-    <div class="logo">أخبار العالم</div>
-
-    <nav>
-      <ul>
-        <li><a href="#general">أخبار</a></li>
-        <li><a href="#technology">تكنولوجيا</a></li>
-        <li><a href="#health">صحة</a></li>
-        <li><a href="#sports">رياضة</a></li>
-        <li><a href="#economy">اقتصاد</a></li>
-      </ul>
-    </nav>
-
-    <div class="search-box">
-      <input type="text" placeholder="ابحث في الأخبار..." aria-label="بحث" />
-    </div>
-  </header>
-
-  <!-- المحتوى الرئيسي -->
-  <main>
-
-    <!-- أخبار عامة -->
-    <section id="general">
-      <h2 class="section-title">أخبار</h2>
-
-      <article class="news-item">
-        <img src="https://cdn.arabic.rt.com/media/pics/2024.04/article/6420e0cb85f54046d24daea4.JPG" alt="انعقاد قمة دولية" />
-        <h3>انعقاد قمة دولية لبحث الأوضاع الاقتصادية العالمية</h3>
-        <p>اجتمعت الدول الكبرى لمناقشة التحديات الاقتصادية العالمية والتعاون لتعزيز الاستقرار المالي وتحقيق التنمية المستدامة.</p>
-      </article>
-
-      <article class="news-item">
-        <img src="https://www.sayidaty.net/sites/default/files/styles/900x506/public/field/image/2024/01/kuwait-gulf-cable-news-2023.jpg?itok=lxUPoFAm" alt="تطورات سياسية" />
-        <h3>تطورات سياسية في الشرق الأوسط</h3>
-        <p>شهدت منطقة الشرق الأوسط تغيرات جديدة وسط محاولات دبلوماسية للحفاظ على السلام والاستقرار في المنطقة.</p>
-      </article>
+    <section class="hero-section fade-in">
+        <div class="container mx-auto px-4">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6">2023 Insights</h1>
+            <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Explore the most impactful articles and events of the year under a starry night sky.</p>
+            <a href="#features" class="bg-blue-500 hover:bg-blue-700 text-white py-3 px-8 rounded-full text-lg font-semibold transition transform hover:scale-105">Discover More</a>
+        </div>
     </section>
 
-    <hr />
-
-    <!-- تكنولوجيا -->
-    <section id="technology">
-      <h2 class="section-title">تكنولوجيا</h2>
-
-      <article class="news-item">
-        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c" alt="تطورات في الذكاء الاصطناعي" />
-        <h3>تطورات جديدة في مجال الذكاء الاصطناعي</h3>
-        <p>شركات التكنولوجيا تعلن عن ابتكارات مدهشة في تقنيات الذكاء الاصطناعي التي ستحدث ثورة في مختلف الصناعات.</p>
-      </article>
-
-      <article class="news-item">
-        <img src="https://cdn.pixabay.com/photo/2017/06/10/07/56/blockchain-2388357_1280.jpg" alt="تقنية البلوكتشين" />
-        <h3>البحث في استخدامات تقنية البلوكتشين خارج العملات الرقمية</h3>
-        <p>يتم توسيع تطبيقات البلوكتشين لتشمل قطاعات مثل الرعاية الصحية والسلاسل اللوجستية.</p>
-      </article>
+    <section id="features" class="container mx-auto px-4 py-16">
+        <h2 class="text-4xl font-bold text-center mb-12 fade-in">Key Highlights</h2>
+        <div class="features">
+            <div class="feature-card text-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/8a8c4cb6-f99e-4d06-b782-4d1efde714d8.png" alt="Glowing AI interface symbolizing advanced technology networks" class="w-24 h-24 mx-auto mb-4" width="96" height="96">
+                <h3 class="text-2xl font-semibold mb-4">Revolutionary AI</h3>
+                <p>Discover how AI transformed industries in 2023.</p>
+                <a href="articles.html#ai" class="text-blue-400 hover:text-blue-600">Read Article</a>
+            </div>
+            <div class="feature-card text-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2a52ee92-2743-471f-b940-288fe6bad0a7.png" alt="Global map with highlighted event markers" class="w-24 h-24 mx-auto mb-4" width="96" height="96">
+                <h3 class="text-2xl font-semibold mb-4">Global Events</h3>
+                <p>Timeline of pivotal events that shaped the world.</p>
+                <a href="events.html" class="text-blue-400 hover:text-blue-600">Explore Timeline</a>
+            </div>
+            <div class="feature-card text-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/22cb844c-33e1-443a-b484-f2f6167ca1e9.png" alt="Green environmental icon representing climate action" class="w-24 h-24 mx-auto mb-4 bg-green-500 rounded-full" width="96" height="96">
+                <h3 class="text-2xl font-semibold mb-4">Climate Action</h3>
+                <p>Efforts and agreements for a sustainable future.</p>
+                <a href="articles.html#climate" class="text-blue-400 hover:text-blue-600">Learn More</a>
+            </div>
+        </div>
     </section>
 
-    <hr />
-
-    <!-- صحة -->
-    <section id="health">
-      <h2 class="section-title">صحة</h2>
-
-      <article class="news-item">
-        <img src="https://cdn.medicalnewstoday.com/content/images/articles/324/324144/doctor-examining-patient.jpg" alt="تطورات طبية" />
-        <h3>ابتكار طبي جديد لعلاج الأمراض المزمنة</h3>
-        <p>أظهرت الأبحاث نتائج واعدة في تطوير علاج جديد يجلب الأمل لمرضى الأمراض المزمنة مثل السكري وأمراض القلب.</p>
-      </article>
-
-      <article class="news-item">
-        <img src="https://cdn.pixabay.com/photo/2016/11/29/04/10/healthy-food-1867402_1280.jpg" alt="نصائح غذائية" />
-        <h3>نصائح غذائية لتحسين الصحة العامة</h3>
-        <p>أخصائيون يؤكدون على أهمية التغذية السليمة وممارسة النشاط البدني للحفاظ على صحة الجسم والعقل.</p>
-      </article>
+    <section class="bg-gray-900 bg-opacity-70 py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold mb-8">What Defines 2023?</h2>
+            <p class="text-lg max-w-4xl mx-auto mb-8">From technological breakthroughs to social movements, 2023 was a year of change, innovation, and global collaboration.</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ac3f3683-7a0c-4d8b-ae35-19c242f751c3.png" alt="Futuristic technology collage" class="w-full rounded" width="300" height="200"></div>
+                <div><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/7f439ec8-791e-4d6c-a94e-08ac130be0e5.png" alt="Diverse people collaborating" class="w-full rounded" width="300" height="200"></div>
+                <div><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/48cef480-b016-4462-9a0f-6e1d3d135299.png" alt="Planet Earth with environmental themes" class="w-full rounded" width="300" height="200"></div>
+            </div>
+        </div>
     </section>
 
-    <hr />
+    <footer class="bg-gray-900 bg-opacity-80 text-white py-8 relative">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 2023 Insights. All rights reserved.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="#top" class="hover:text-blue-400">Top</a>
+                <a href="about.html" class="hover:text-blue-400">About</a>
+                <a href="contact.html" class="hover:text-blue-400">Contact</a>
+            </div>
+        </div>
+    </footer>
 
-    <!-- رياضة -->
-    <section id="sports">
-      <h2 class="section-title">رياضة</h2>
+    <script>
+        const nightSky = document.getElementById('night-sky');
+        let meteorsActive = 0;
 
-      <article class="news-item">
-        <img src="https://images.unsplash.com/photo-1521412644187-c49fa049e84d" alt="بطولة كرة القدم" />
-        <h3>ختام بطولة كرة القدم الدولية بأجواء حماسية</h3>
-        <p>شهدت البطولة مباريات قوية ونهاية مثيرة حسمت اللقب لصالح الفريق صاحب الأداء المميز.</p>
-      </article>
+        function generateStars() {
+            const starCount = Math.floor(window.innerWidth / 10); // Increased star density
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 120 + '%';
+                star.style.width = (Math.random() * 6 + 2) + 'px'; // Increased min size
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random() * 0.9 + 0.3; // Higher min opacity for visibility
+                star.style.animationDelay = Math.random() * 60 + 's';
+                nightSky.appendChild(star);
+            }
+        }
 
-      <article class="news-item">
-        <img src="https://images.unsplash.com/photo-1508606572321-901ea443707f" alt="رياضات جديدة" />
-        <h3>ارتفاع شعبية الرياضات الجديدة بين الشباب</h3>
-        <p>تزايد الإقبال على ممارسة رياضات مثل تسلق الجبال والتزلج الهوائي مع تزايد الوعي بأهمية النشاط البدني.</p>
-      </article>
-    </section>
+        function generateMeteor() {
+            if (meteorsActive < 3) {
+                meteorsActive++;
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                meteor.style.top = (Math.random() * 50 - 20) + '%';
+                meteor.style.left = (Math.random() * 150) + '%';
+                meteor.style.animationDelay = Math.random() * 4 + 's';
+                nightSky.appendChild(meteor);
+                setTimeout(() => {
+                    if (nightSky.contains(meteor)) nightSky.removeChild(meteor);
+                    meteorsActive--;
+                }, 4000);
+            }
+        }
 
-    <hr />
+        generateStars();
+        setInterval(generateMeteor, 2000);
 
-    <!-- اقتصاد -->
-    <section id="economy">
-      <h2 class="section-title">اقتصاد</h2>
-
-      <article class="news-item">
-        <img src="https://images.unsplash.com/photo-1556745757-8d76bdb6984b" alt="نمو الاقتصاد" />
-        <h3>توقعات بنمو الاقتصاد العالمي في الربع القادم</h3>
-        <p>خبراء الاقتصاد يشيرون إلى فرص تعافٍ متسارعة مع حلول حلول السياسات المناسبة وتحسن مؤشرات السوق.</p>
-      </article>
-
-      <article class="news-item">
-        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" alt="تقارير مالية" />
-        <h3>تأثير التقارير المالية على الأسواق الدولية</h3>
-        <p>تتابع الأسواق الدولية عن كثب نتائج الشركات الكبرى وتأثيرها على حركة الأسهم والعملات.</p>
-      </article>
-    </section>
-    
-  </main>
-
-  <script>
-    // إنشاء شهب بشكل عشوائي وحركتها
-    const shootingStarsContainer = document.querySelector('.shooting-stars');
-
-    function createShootingStar() {
-      const star = document.createElement('div');
-      star.classList.add('shooting-star');
-
-      // موقع عشوائي أعلى الشاشة
-      star.style.top = Math.random() * window.innerHeight * 0.5 + 'px';
-      star.style.right = Math.random() * window.innerWidth + 'px';
-
-      // مدة عشوائية للحركة
-      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-
-      shootingStarsContainer.appendChild(star);
-
-      // إزالة الشهاب بعد انتهاء الحركة
-      star.addEventListener('animationend', () => {
-        star.remove();
-      });
-    }
-
-    // توليد شهاب كل 700 مللي ثانية
-    setInterval(createShootingStar, 700);
-  </script>
-
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
+</content>
+</create_file>
+
+<create_file>
+<path>websiteProject/about.html</path>
+<content>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - 2023 Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        #night-sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to bottom, #000011 0%, #191970 50%, #000000 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out, moveStars 60s infinite linear;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes moveStars { from { transform: translateX(0vw); } to { transform: translateX(-10vw); } }
+        .meteor { position: absolute; width: 3px; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); animation: shoot 4s infinite linear, fade 4s infinite ease-in-out; }
+        @keyframes shoot { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(150vh) translateX(-150vw); } }
+        @keyframes fade { 0% { opacity: 0; } 10%, 90% { opacity: 1; } 100% { opacity: 0; } }
+        .fade-in { animation: fadeIn 2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen relative">
+    <div id="night-sky"></div>
+    <header class="bg-transparent text-white py-6 relative">
+        <nav class="container mx-auto flex justify-between items-center px-4">
+            <div class="font-bold text-2xl">2023 Insights</div>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="hover:text-blue-400 transition">Home</a></li>
+                <li><a href="about.html" class="hover:text-blue-400 transition">About</a></li>
+                <li><a href="articles.html" class="hover:text-blue-400 transition">Articles</a></li>
+                <li><a href="events.html" class="hover:text-blue-400 transition">Events</a></li>
+                <li><a href="gallery.html" class="hover:text-blue-400 transition">Gallery</a></li>
+                <li><a href="contact.html" class="hover:text-blue-400 transition">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container mx-auto px-4 py-16 text-center fade-in">
+        <h1 class="text-5xl font-bold mb-8">About 2023 Insights</h1>
+        <p class="text-lg mb-12 max-w-3xl mx-auto">Our mission is to chronicle the transformative events, innovations, and stories of 2023 through engaging articles, visual timelines, and immersive experiences under a cosmic backdrop.</p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-gray-900 bg-opacity-70 p-8 rounded-lg">
+                <h2 class="text-2xl font-semibold mb-4">Our Story</h2>
+                <p>Born from the desire to capture the essence of a pivotal year, 2023 Insights began as a collection of reflections on global changes.</p>
+            </div>
+            <div class="bg-gray-900 bg-opacity-70 p-8 rounded-lg">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b99a03d7-5027-4e97-99f0-33a649f0bd94.png" alt="Diverse team collaborating on digital projects" class="w-full rounded mb-4" width="400" height="300">
+                <h2 class="text-2xl font-semibold mb-4">Our Team</h2>
+                <p>A passionate group of writers, designers, and curators dedicated to bringing you the stories that matter.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 bg-opacity-80 text-white py-8 relative">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 2023 Insights. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const nightSky = document.getElementById('night-sky');
+        let meteorsActive = 0;
+
+        function generateStars() {
+            const starCount = Math.floor(window.innerWidth / 10);
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 120 + '%';
+                star.style.width = (Math.random() * 6 + 2) + 'px';
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random() * 0.9 + 0.3;
+                star.style.animationDelay = Math.random() * 60 + 's';
+                nightSky.appendChild(star);
+            }
+        }
+
+        function generateMeteor() {
+            if (meteorsActive < 3) {
+                meteorsActive++;
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                meteor.style.top = (Math.random() * 50 - 20) + '%';
+                meteor.style.left = Math.random() * 150 + '%';
+                meteor.style.animationDelay = Math.random() * 4 + 's';
+                nightSky.appendChild(meteor);
+                setTimeout(() => {
+                    if (nightSky.contains(meteor)) nightSky.removeChild(meteor);
+                    meteorsActive--;
+                }, 4000);
+            }
+        }
+
+        generateStars();
+        setInterval(generateMeteor, 2000);
+    </script>
+</body>
+</html>
+</content>
+</create_file>
+
+<create_file>
+<path>websiteProject/gallery.html</path>
+<content>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - 2023 Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        #night-sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to bottom, #000011 0%, #191970 50%, #000000 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out, moveStars 60s infinite linear;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes moveStars { from { transform: translateX(0vw); } to { transform: translateX(-10vw); } }
+        .meteor { position: absolute; width: 3px; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); animation: shoot 4s infinite linear, fade 4s infinite ease-in-out; }
+        @keyframes shoot { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(150vh) translateX(-150vw); } }
+        @keyframes fade { 0% { opacity: 0; } 10%, 90% { opacity: 1; } 100% { opacity: 0; } }
+        .fade-in { animation: fadeIn 2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; padding: 2rem; }
+        .gallery-item img { transition: transform 0.3s; width: 100%; height: auto; }
+        .gallery-item:hover img { transform: scale(1.05); }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen relative">
+    <div id="night-sky"></div>
+    <header class="bg-transparent text-white py-6 relative">
+        <nav class="container mx-auto flex justify-between items-center px-4">
+            <div class="font-bold text-2xl">2023 Insights</div>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="hover:text-blue-400 transition">Home</a></li>
+                <li><a href="about.html" class="hover:text-blue-400 transition">About</a></li>
+                <li><a href="articles.html" class="hover:text-blue-400 transition">Articles</a></li>
+                <li><a href="events.html" class="hover:text-blue-400 transition">Events</a></li>
+                <li><a href="gallery.html" class="hover:text-blue-400 transition">Gallery</a></li>
+                <li><a href="contact.html" class="hover:text-blue-400 transition">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container mx-auto px-4 py-16 fade-in">
+        <h1 class="text-5xl font-bold text-center mb-12">2023 Gallery</h1>
+        <div class="gallery-grid">
+            <div class="gallery-item"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/9a408f8d-8efe-484f-a68c-5cdd78633e12.png" alt="Winter Olympics highlights" width="250" height="200"></div>
+            <div class="gallery-item"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/35df8c6d-0fcc-4ae6-9d05-3d4dfe640015.png" alt="Climate summit leaders" width="250" height="200"></div>
+            <div class="gallery-item"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/ece396f3-c160-4010-a89c-9ade9ee454aa.png" alt="UN conference discussion" width="250" height="200"></div>
+            <div class="gallery-item"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6b298b18-f0d2-4649-a28c-3f2373ffdd0c.png" alt="AI neural networks" width="250" height="200"></div>
+            <div class="gallery-item"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/58a3922c-948d-49d1-aa8b-626113c3eb3a.png" alt="Environmental actions" width="250" height="200"></div>
+            <div class="gallery-item"><img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d138a21d-914e-4c3f-81eb-4cf3dea0c51b.png" alt="Social movements" width="250" height="200"></div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 bg-opacity-80 text-white py-8 relative">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 2023 Insights. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const nightSky = document.getElementById('night-sky');
+        let meteorsActive = 0;
+
+        function generateStars() {
+            const starCount = Math.floor(window.innerWidth / 10);
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 120 + '%';
+                star.style.width = (Math.random() * 6 + 2) + 'px';
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random() * 0.9 + 0.3;
+                star.style.animationDelay = Math.random() * 60 + 's';
+                nightSky.appendChild(star);
+            }
+        }
+
+        function generateMeteor() {
+            if (meteorsActive < 3) {
+                meteorsActive++;
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                meteor.style.top = (Math.random() * 50 - 20) + '%';
+                meteor.style.left = Math.random() * 150 + '%';
+                meteor.style.animationDelay = Math.random() * 4 + 's';
+                nightSky.appendChild(meteor);
+                setTimeout(() => {
+                    if (nightSky.contains(meteor)) nightSky.removeChild(meteor);
+                    meteorsActive--;
+                }, 4000);
+            }
+        }
+
+        generateStars();
+        setInterval(generateMeteor, 2000);
+    </script>
+</body>
+</html>
+</content>
+</create_file>
+
+<create_file>
+<path>websiteProject/articles.html</path>
+<content>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2023 Articles - 2023 Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        #night-sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to bottom, #000011 0%, #191970 50%, #000000 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out, moveStars 60s infinite linear;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes moveStars { from { transform: translateX(0vw); } to { transform: translateX(-10vw); } }
+        .meteor { position: absolute; width: 3px; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); animation: shoot 4s infinite linear, fade 4s infinite ease-in-out; }
+        @keyframes shoot { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(150vh) translateX(-150vw); } }
+        @keyframes fade { 0% { opacity: 0; } 10%, 90% { opacity: 1; } 100% { opacity: 0; } }
+        .fade-in { animation: fadeIn 2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .article-card { transition: transform 0.3s, box-shadow 0.3s; margin-bottom: 2rem; }
+        .article-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
+        .articles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+        @media (max-width: 768px) { .articles-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen relative">
+    <div id="night-sky"></div>
+    <header class="bg-transparent text-white py-6 relative">
+        <nav class="container mx-auto flex justify-between items-center px-4">
+            <div class="font-bold text-2xl">2023 Insights</div>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="hover:text-blue-400 transition">Home</a></li>
+                <li><a href="about.html" class="hover:text-blue-400 transition">About</a></li>
+                <li><a href="articles.html" class="hover:text-blue-400 transition">Articles</a></li>
+                <li><a href="events.html" class="hover:text-blue-400 transition">Events</a></li>
+                <li><a href="gallery.html" class="hover:text-blue-400 transition">Gallery</a></li>
+                <li><a href="contact.html" class="hover:text-blue-400 transition">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container mx-auto px-4 py-16">
+        <h1 class="text-5xl font-bold text-center mb-12 fade-in">2023 Articles</h1>
+        <div class="articles-grid">
+            <div class="article-card bg-gray-900 bg-opacity-70 p-6 rounded-lg" id="ai">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6b298b18-f0d2-4649-a28c-3f2373ffdd0c.png" alt="AI neural networks" class="w-full h-72 object-cover rounded-t-lg mb-4" width="400" height="300">
+                <h3 class="text-xl font-bold">The Rise of Generative AI</h3>
+                <p>Exploring how tools like ChatGPT revolutionized creativity and productivity in 2023.</p>
+                <span class="text-sm text-gray-300">Published: March 2023</span>
+                <a href="#" class="text-blue-400 mt-4 inline-block">Read Full Article</a>
+            </div>
+
+            <div class="article-card bg-gray-900 bg-opacity-70 p-6 rounded-lg" id="climate">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/58a3922c-948d-49d1-aa8b-626113c3eb3a.png" alt="Environmental actions" class="w-full h-72 object-cover rounded-t-lg mb-4" width="400" height="300">
+                <h3 class="text-xl font-bold">Climate Action in the Decade</h3>
+                <p>Key conferences and agreements aimed at combating global warming.</p>
+                <span class="text-sm text-gray-300">Published: June 2023</span>
+                <a href="#" class="text-blue-400 mt-4 inline-block">Read Full Article</a>
+            </div>
+
+            <div class="article-card bg-gray-900 bg-opacity-70 p-6 rounded-lg">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d138a21d-914e-4c3f-81eb-4cf3dea0c51b.png" alt="Social movements" class="w-full h-72 object-cover rounded-t-lg mb-4" width="400" height="300">
+                <h3 class="text-xl font-bold">Social Movements Shaping Society</h3>
+                <p>How grassroots movements influenced policy and culture in 2023.</p>
+                <span class="text-sm text-gray-300">Published: September 2023</span>
+                <a href="#" class="text-blue-400 mt-4 inline-block">Read Full Article</a>
+            </div>
+
+            <div class="article-card bg-gray-900 bg-opacity-70 p-6 rounded-lg">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f79b5d1a-776a-4d2c-99a4-8b71d126598f.png" alt="Futuristic trends of 2023" class="w-full h-72 object-cover rounded-t-lg mb-4" width="400" height="300">
+                <h3 class="text-xl font-bold">Looking Ahead</h3>
+                <p>Predictions and trends shaping the future based on 2023 insights.</p>
+                <span class="text-sm text-gray-300">Published: December 2023</span>
+                <a href="#" class="text-blue-400 mt-4 inline-block">Read Full Article</a>
+            </div>
+        </div>
+
+        <div class="text-center mt-12">
+            <button id="loadMore" class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded">Load More Articles</button>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 bg-opacity-80 text-white py-8 relative">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2023 2023 Insights. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const nightSky = document.getElementById('night-sky');
+        let meteorsActive = 0;
+
+        function generateStars() {
+            const starCount = Math.floor(window.innerWidth / 10);
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 120 + '%';
+                star.style.width = (Math.random() * 6 + 2) + 'px';
+                star.style.height = star.style.width;
+                star.style.opacity = Math.random() * 0.9 + 0.3;
+                star.style.animationDelay = Math.random() * 60 + 's';
+                nightSky.appendChild(star);
+            }
+        }
+
+        function generateMeteor() {
+            if (meteorsActive < 3) {
+                meteorsActive++;
+                const meteor = document.createElement('div');
+                meteor.classList.add('meteor');
+                meteor.style.top = (Math.random() * 50 - 20) + '%';
+                meteor.style.left = Math.random() * 150 + '%';
+                meteor.style.animationDelay = Math.random() * 4 + 's';
+                nightSky.appendChild(meteor);
+                setTimeout(() => {
+                    if (nightSky.contains(meteor)) nightSky.removeChild(meteor);
+                    meteorsActive--;
+                }, 4000);
+            }
+        }
+
+        generateStars();
+        setInterval(generateMeteor, 2000);
+
+        document.getElementById('loadMore').addEventListener('click', () => {
+            alert('More articles coming soon!');
+        });
+    </script>
+</body>
+</html>
+</content>
+</create_file>
+
+<create_file>
+<path>websiteProject/events.html</path>
+<content>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2023 Events - 2023 Insights</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        #night-sky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(to bottom, #000011 0%, #191970 50%, #000000 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out, moveStars 60s infinite linear;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes moveStars { from { transform: translateX(0vw); } to { transform: translateX(-10vw); } }
+        .meteor { position: absolute; width: 3px; height: 30px; background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%); animation: shoot 4s infinite linear, fade 4s infinite ease-in-out; }
+        @keyframes shoot { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(150vh) translateX(-150vw); } }
+        @keyframes fade { 0% { opacity: 0; } 10%, 90% { opacity: 1; } 100% { opacity: 0; } }
+        .fade-in { animation: fadeIn 2s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .timeline-container { margin: 2rem 0; display: flex; flex-direction: column; gap: 2rem; }
+        .timeline-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; transition: transform 0.3s; }
+        .timeline-item:hover { transform: translateX(10px); }
+        .timeline-dot { width: 20px; height: 20px; background: #3B82F6; border-radius: 50%; border: 3px solid white; }
+        .timeline-line { position: absolute; left: 10px; top: 20px; bottom: 20px; width: 4px; background: #3B82F6; }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen relative">
+    <div id="night-sky"></div>
+    <header class="bg-transparent text-white py-6 relative">
+        <nav class="container mx-auto flex justify-between items-center px-4">
+            <div class="font-bold text-2xl">2023 Insights</div>
+            <ul class="flex space-x-6">
+                <li><a href="index.html" class="hover:text-blue-400 transition">Home</a></li>
+                <li><a href="about.html" class="hover:text-blue-400 transition">About</a></li>
+                <li><a href="articles.html" class="hover:text-blue-400 transition">Articles</a></li>
+                <li><a href="events.html" class="hover:text-blue-400 transition">Events</a></li>
+                <li><a href="gallery.html" class="hover:text-blue-400 transition">Gallery</a></li>
+                <li><a href="contact.html" class="hover:text-blue-400 transition">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container mx-auto px-4 py-16">
+        <h1 class="text-5xl font-bold text-center mb-12 fade-in">2023 Key Events</h1>
+        <div class="timeline-container">
+            <div class="relative">
+                <div class="timeline-line"></div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div>
+                        <h3 class="text-2xl font-bold">Winter Olympics 2023</h3>
+                        <p class="text-gray-300">February 2023 - Beijing</p>
+                        <p class="mt-2">A spectacle featuring new sports like snowboarding champions and international rivalries.</p>
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/9a408f8d-8efe-484f-a68c-5cdd78633e12.png" alt="Winter Olympics" class="w-full h-32 object-cover mt-4 rounded" width="500" height="128">
+                        <a href="#" class="text-blue-400 mt-2 inline-block">Learn More</a>
+                    </
