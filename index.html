@@ -1,75 +1,368 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>Games Portal – بوابة الألعاب</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>أخبار العالم</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .lang-switch { margin-bottom: 20px; }
-    iframe { width: 100%; height: 600px; border: none; margin-bottom: 40px; }
-    h1, h2 { margin-top: 0; }
+    /* الخطوط والمساحات */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0b1220; /* أزرق داكن مائل إلى الأسود */
+      color: white;
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    /* خلفية متحركة - نجوم وشهب */
+    .stars, .shooting-stars {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* نجوم */
+    .stars {
+      background: transparent url('https://i.imgur.com/TPV4LoA.png') repeat;
+      background-size: contain;
+      animation: twinkle 20s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {background-position: 0 0;}
+      50% {background-position: 10000px 5000px;}
+    }
+
+    /* شهب */
+    .shooting-star {
+      position: absolute;
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(-45deg, white, rgba(255, 255, 255, 0));
+      border-radius: 100%;
+      opacity: 0;
+      animation: shooting 3s linear infinite;
+    }
+
+    @keyframes shooting {
+      0% {
+        transform: translateX(0) translateY(0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-500px) translateY(200px) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    /* توليد الشهب بشكل ديناميكي */
+    /* ستتم إضافتها عبر جافاسكربت */
+
+    /* شريط التنقل */
+    header {
+      background-color: #1c293f;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* الشعار */
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ffcc00;
+      user-select: none;
+    }
+
+    /* قائمة التنقل */
+    nav ul {
+      display: flex;
+      gap: 20px;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      font-weight: bold;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    nav ul li a:hover {
+      background-color: #ffcc00;
+      color: #0b1220;
+    }
+
+    /* مربع البحث */
+    .search-box {
+      position: relative;
+    }
+    .search-box input[type="text"] {
+      padding: 6px 10px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      width: 180px;
+      transition: width 0.4s ease;
+    }
+    .search-box input[type="text"]:focus {
+      width: 250px;
+    }
+
+    /* المحتوى الرئيسي */
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 20px 50px 20px;
+      z-index: 1;
+      position: relative;
+    }
+
+    /* قسم الأخبار */
+    section {
+      margin-bottom: 50px;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    /* عناوين الأقسام */
+    h2.section-title {
+      border-right: 6px solid #ffcc00;
+      padding-right: 15px;
+      margin-bottom: 25px;
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+
+    /* كل خبر */
+    article.news-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 30px;
+      background-color: rgba(255,255,255,0.12);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(255,204,0,0.3);
+      transition: box-shadow 0.3s ease;
+    }
+    article.news-item:hover {
+      box-shadow: 0 0 20px rgba(255,204,0,0.7);
+    }
+
+    /* صورة الخبر */
+    article.news-item img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      aspect-ratio: 16 / 9;
+    }
+
+    /* عنوان الخبر */
+    article.news-item h3 {
+      font-size: 1.3rem;
+      margin: 15px 20px 10px 20px;
+      color: #ffcc00;
+    }
+
+    /* نص الخبر */
+    article.news-item p {
+      margin: 0 20px 20px 20px;
+      color: #ddd;
+    }
+
+    /* فاصل أفقي */
+    hr {
+      border: 0;
+      border-top: 1px solid #444;
+      margin: 40px 0;
+    }
+
+    /* استجابة لجميع الأجهزة */
+    @media (max-width: 768px){
+      nav ul {
+        gap: 10px;
+      }
+      .search-box input[type="text"] {
+        width: 140px;
+      }
+      .search-box input[type="text"]:focus {
+        width: 180px;
+      }
+      article.news-item h3 {
+        font-size: 1.1rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="lang-switch">
-    <button onclick="setLang('en')">English</button>
-    <button onclick="setLang('ar')">العربية</button>
-  </div>
-  
-  <h1 id="title">Games Portal</h1>
-  
-  <div id="games">
 
-    <div class="game-block">
-      <h2 id="g1-title">Level Devil</h2>
-      <iframe id="g1-frame" src="https://leveldevil.games/embed/level-devil-game"></iframe>
+  <!-- خلفية نجوم -->
+  <div class="stars"></div>
+  <div class="shooting-stars"></div>
+
+  <!-- الرأس والشعار والتنقل والبحث -->
+  <header>
+    <div class="logo">أخبار العالم</div>
+
+    <nav>
+      <ul>
+        <li><a href="#general">أخبار</a></li>
+        <li><a href="#technology">تكنولوجيا</a></li>
+        <li><a href="#health">صحة</a></li>
+        <li><a href="#sports">رياضة</a></li>
+        <li><a href="#economy">اقتصاد</a></li>
+      </ul>
+    </nav>
+
+    <div class="search-box">
+      <input type="text" placeholder="ابحث في الأخبار..." aria-label="بحث" />
     </div>
+  </header>
 
-    <div class="game-block">
-      <h2 id="g2-title">Level Devil 2</h2>
-      <iframe id="g2-frame" src="https://crazygames-poki.com/embed/level-devil-2"></iframe>
-    </div>
+  <!-- المحتوى الرئيسي -->
+  <main>
 
-    <div class="game-block">
-      <h2 id="g3-title">Level Devil 3</h2>
-      <!-- مصدر Level Devil 3 غير متوفر بـ iframe مباشر، لذا نستخدم رابط صفحة كاملة -->
-      <iframe id="g3-frame" src="https://level-devil.io/level-devil-3"></iframe>
-    </div>
+    <!-- أخبار عامة -->
+    <section id="general">
+      <h2 class="section-title">أخبار</h2>
 
-    <div class="game-block">
-      <h2 id="g4-title">Geometry Dash Lite</h2>
-      <!-- مثال لعبة أخرى مشهورة مشابهة -->
-      <iframe id="g4-frame" src="https://level-devil.io/getting-over-it"></iframe>
-    </div>
+      <article class="news-item">
+        <img src="https://cdn.arabic.rt.com/media/pics/2024.04/article/6420e0cb85f54046d24daea4.JPG" alt="انعقاد قمة دولية" />
+        <h3>انعقاد قمة دولية لبحث الأوضاع الاقتصادية العالمية</h3>
+        <p>اجتمعت الدول الكبرى لمناقشة التحديات الاقتصادية العالمية والتعاون لتعزيز الاستقرار المالي وتحقيق التنمية المستدامة.</p>
+      </article>
 
-  </div>
+      <article class="news-item">
+        <img src="https://www.sayidaty.net/sites/default/files/styles/900x506/public/field/image/2024/01/kuwait-gulf-cable-news-2023.jpg?itok=lxUPoFAm" alt="تطورات سياسية" />
+        <h3>تطورات سياسية في الشرق الأوسط</h3>
+        <p>شهدت منطقة الشرق الأوسط تغيرات جديدة وسط محاولات دبلوماسية للحفاظ على السلام والاستقرار في المنطقة.</p>
+      </article>
+    </section>
+
+    <hr />
+
+    <!-- تكنولوجيا -->
+    <section id="technology">
+      <h2 class="section-title">تكنولوجيا</h2>
+
+      <article class="news-item">
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c" alt="تطورات في الذكاء الاصطناعي" />
+        <h3>تطورات جديدة في مجال الذكاء الاصطناعي</h3>
+        <p>شركات التكنولوجيا تعلن عن ابتكارات مدهشة في تقنيات الذكاء الاصطناعي التي ستحدث ثورة في مختلف الصناعات.</p>
+      </article>
+
+      <article class="news-item">
+        <img src="https://cdn.pixabay.com/photo/2017/06/10/07/56/blockchain-2388357_1280.jpg" alt="تقنية البلوكتشين" />
+        <h3>البحث في استخدامات تقنية البلوكتشين خارج العملات الرقمية</h3>
+        <p>يتم توسيع تطبيقات البلوكتشين لتشمل قطاعات مثل الرعاية الصحية والسلاسل اللوجستية.</p>
+      </article>
+    </section>
+
+    <hr />
+
+    <!-- صحة -->
+    <section id="health">
+      <h2 class="section-title">صحة</h2>
+
+      <article class="news-item">
+        <img src="https://cdn.medicalnewstoday.com/content/images/articles/324/324144/doctor-examining-patient.jpg" alt="تطورات طبية" />
+        <h3>ابتكار طبي جديد لعلاج الأمراض المزمنة</h3>
+        <p>أظهرت الأبحاث نتائج واعدة في تطوير علاج جديد يجلب الأمل لمرضى الأمراض المزمنة مثل السكري وأمراض القلب.</p>
+      </article>
+
+      <article class="news-item">
+        <img src="https://cdn.pixabay.com/photo/2016/11/29/04/10/healthy-food-1867402_1280.jpg" alt="نصائح غذائية" />
+        <h3>نصائح غذائية لتحسين الصحة العامة</h3>
+        <p>أخصائيون يؤكدون على أهمية التغذية السليمة وممارسة النشاط البدني للحفاظ على صحة الجسم والعقل.</p>
+      </article>
+    </section>
+
+    <hr />
+
+    <!-- رياضة -->
+    <section id="sports">
+      <h2 class="section-title">رياضة</h2>
+
+      <article class="news-item">
+        <img src="https://images.unsplash.com/photo-1521412644187-c49fa049e84d" alt="بطولة كرة القدم" />
+        <h3>ختام بطولة كرة القدم الدولية بأجواء حماسية</h3>
+        <p>شهدت البطولة مباريات قوية ونهاية مثيرة حسمت اللقب لصالح الفريق صاحب الأداء المميز.</p>
+      </article>
+
+      <article class="news-item">
+        <img src="https://images.unsplash.com/photo-1508606572321-901ea443707f" alt="رياضات جديدة" />
+        <h3>ارتفاع شعبية الرياضات الجديدة بين الشباب</h3>
+        <p>تزايد الإقبال على ممارسة رياضات مثل تسلق الجبال والتزلج الهوائي مع تزايد الوعي بأهمية النشاط البدني.</p>
+      </article>
+    </section>
+
+    <hr />
+
+    <!-- اقتصاد -->
+    <section id="economy">
+      <h2 class="section-title">اقتصاد</h2>
+
+      <article class="news-item">
+        <img src="https://images.unsplash.com/photo-1556745757-8d76bdb6984b" alt="نمو الاقتصاد" />
+        <h3>توقعات بنمو الاقتصاد العالمي في الربع القادم</h3>
+        <p>خبراء الاقتصاد يشيرون إلى فرص تعافٍ متسارعة مع حلول حلول السياسات المناسبة وتحسن مؤشرات السوق.</p>
+      </article>
+
+      <article class="news-item">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d" alt="تقارير مالية" />
+        <h3>تأثير التقارير المالية على الأسواق الدولية</h3>
+        <p>تتابع الأسواق الدولية عن كثب نتائج الشركات الكبرى وتأثيرها على حركة الأسهم والعملات.</p>
+      </article>
+    </section>
+    
+  </main>
 
   <script>
-    const data = {
-      en: {
-        title: "Games Portal",
-        g1: "Level Devil",
-        g2: "Level Devil 2",
-        g3: "Level Devil 3",
-        g4: "Geometry Dash Lite"
-      },
-      ar: {
-        title: "بوابة الألعاب",
-        g1: "شيطان المستوى 1",
-        g2: "شيطان المستوى 2",
-        g3: "شيطان المستوى 3",
-        g4: "جيو متري داش لايت"
-      }
-    };
+    // إنشاء شهب بشكل عشوائي وحركتها
+    const shootingStarsContainer = document.querySelector('.shooting-stars');
 
-    function setLang(lang) {
-      document.getElementById('title').textContent = data[lang].title;
-      document.getElementById('g1-title').textContent = data[lang].g1;
-      document.getElementById('g2-title').textContent = data[lang].g2;
-      document.getElementById('g3-title').textContent = data[lang].g3;
-      document.getElementById('g4-title').textContent = data[lang].g4;
-      document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    function createShootingStar() {
+      const star = document.createElement('div');
+      star.classList.add('shooting-star');
+
+      // موقع عشوائي أعلى الشاشة
+      star.style.top = Math.random() * window.innerHeight * 0.5 + 'px';
+      star.style.right = Math.random() * window.innerWidth + 'px';
+
+      // مدة عشوائية للحركة
+      star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+
+      shootingStarsContainer.appendChild(star);
+
+      // إزالة الشهاب بعد انتهاء الحركة
+      star.addEventListener('animationend', () => {
+        star.remove();
+      });
     }
+
+    // توليد شهاب كل 700 مللي ثانية
+    setInterval(createShootingStar, 700);
   </script>
+
 </body>
 </html>
