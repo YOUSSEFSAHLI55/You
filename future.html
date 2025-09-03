@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استشراف المستقبل - 2023 Insights</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+    #night-sky {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1;
+        background: linear-gradient(to bottom, #000011 0%, #191970 50%, #000000 100%);
+    }
+    .star {
+        position: absolute; background: white; border-radius: 50%;
+        animation: twinkle 2s infinite ease-in-out, moveStars 60s infinite linear;
+    }
+    @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    @keyframes moveStars { from { transform: translateX(0vw); } to { transform: translateX(-10vw); } }
+    .meteor {
+        position: absolute; width: 3px; height: 30px;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+        animation: shoot 4s infinite linear, fade 4s infinite ease-in-out;
+    }
+    @keyframes shoot { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(150vh) translateX(-150vw); } }
+    @keyframes fade { 0% { opacity: 0; } 10%, 90% { opacity: 1; } 100% { opacity: 0; } }
+    .fade-in { animation: fadeIn 2s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen relative">
+  <div id="night-sky"></div>
+  <header class="bg-transparent text-white py-6 relative">
+    <nav class="container mx-auto flex justify-between items-center px-4">
+      <div class="font-bold text-2xl">2023 Insights</div>
+      <ul class="flex space-x-6">
+        <li><a href="index.html" class="hover:text-blue-400 transition">الرئيسية</a></li>
+        <li><a href="articles.html" class="hover:text-blue-400 transition">المقالات</a></li>
+        <li><a href="events.html" class="hover:text-blue-400 transition">الأحداث</a></li>
+        <li><a href="gallery.html" class="hover:text-blue-400 transition">المعرض</a></li>
+        <li><a href="contact.html" class="hover:text-blue-400 transition">اتصل بنا</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="container mx-auto px-4 py-16 fade-in">
+    <h1 class="text-4xl font-bold mb-6">استشراف المستقبل</h1>
+    <p class="text-gray-300 mb-8">نُشر في: ديسمبر 2023</p>
+    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f79b5d1a-776a-4d2c-99a4-8b71d126598f.png" alt="استشراف المستقبل" class="w-full h-96 object-cover rounded mb-8">
+
+    <article class="prose prose-lg text-gray-200 max-w-4xl mx-auto">
+      
+        <p>مع نهاية عام 2023، توجهت الأنظار نحو المستقبل وما يحمله من فرص وتحديات.</p>
+        <h2>التوقعات</h2>
+        <ul>
+          <li>توسع استخدام الذكاء الاصطناعي في مختلف القطاعات.</li>
+          <li>تحولات في الاقتصاد الرقمي والعمل عن بعد.</li>
+          <li>تقدم في مجال استكشاف الفضاء.</li>
+        </ul>
+        <h2>الخاتمة</h2>
+        <p>يبقى المستقبل مفتوحاً أمام الابتكارات التي قد تغير شكل حياتنا بشكل جذري.</p>
+        
+    </article>
+  </section>
+
+  <footer class="bg-gray-900 bg-opacity-80 text-white py-8 relative">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2023 2023 Insights. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+  <script>
+    const nightSky = document.getElementById('night-sky');
+    let meteorsActive = 0;
+
+    function generateStars() {
+      const starCount = Math.floor(window.innerWidth / 10);
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.top = Math.random() * 100 + '%';
+        star.style.left = Math.random() * 120 + '%';
+        star.style.width = (Math.random() * 6 + 2) + 'px';
+        star.style.height = star.style.width;
+        star.style.opacity = Math.random() * 0.9 + 0.3;
+        star.style.animationDelay = Math.random() * 60 + 's';
+        nightSky.appendChild(star);
+      }
+    }
+
+    function generateMeteor() {
+      if (meteorsActive < 3) {
+        meteorsActive++;
+        const meteor = document.createElement('div');
+        meteor.classList.add('meteor');
+        meteor.style.top = (Math.random() * 50 - 20) + '%';
+        meteor.style.left = Math.random() * 150 + '%';
+        meteor.style.animationDelay = Math.random() * 4 + 's';
+        nightSky.appendChild(meteor);
+        setTimeout(() => {
+          if (nightSky.contains(meteor)) nightSky.removeChild(meteor);
+          meteorsActive--;
+        }, 4000);
+      }
+    }
+
+    generateStars();
+    setInterval(generateMeteor, 2000);
+  </script>
+</body>
+</html>
