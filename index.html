@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Games Portal – بوابة الألعاب</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .lang-switch { margin-bottom: 20px; }
+    iframe { width: 100%; height: 600px; border: none; margin-bottom: 40px; }
+    h1, h2 { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <div class="lang-switch">
+    <button onclick="setLang('en')">English</button>
+    <button onclick="setLang('ar')">العربية</button>
+  </div>
+  
+  <h1 id="title">Games Portal</h1>
+  
+  <div id="games">
+
+    <div class="game-block">
+      <h2 id="g1-title">Level Devil</h2>
+      <iframe id="g1-frame" src="https://leveldevil.games/embed/level-devil-game"></iframe>
+    </div>
+
+    <div class="game-block">
+      <h2 id="g2-title">Level Devil 2</h2>
+      <iframe id="g2-frame" src="https://crazygames-poki.com/embed/level-devil-2"></iframe>
+    </div>
+
+    <div class="game-block">
+      <h2 id="g3-title">Level Devil 3</h2>
+      <!-- مصدر Level Devil 3 غير متوفر بـ iframe مباشر، لذا نستخدم رابط صفحة كاملة -->
+      <iframe id="g3-frame" src="https://level-devil.io/level-devil-3"></iframe>
+    </div>
+
+    <div class="game-block">
+      <h2 id="g4-title">Geometry Dash Lite</h2>
+      <!-- مثال لعبة أخرى مشهورة مشابهة -->
+      <iframe id="g4-frame" src="https://level-devil.io/getting-over-it"></iframe>
+    </div>
+
+  </div>
+
+  <script>
+    const data = {
+      en: {
+        title: "Games Portal",
+        g1: "Level Devil",
+        g2: "Level Devil 2",
+        g3: "Level Devil 3",
+        g4: "Geometry Dash Lite"
+      },
+      ar: {
+        title: "بوابة الألعاب",
+        g1: "شيطان المستوى 1",
+        g2: "شيطان المستوى 2",
+        g3: "شيطان المستوى 3",
+        g4: "جيو متري داش لايت"
+      }
+    };
+
+    function setLang(lang) {
+      document.getElementById('title').textContent = data[lang].title;
+      document.getElementById('g1-title').textContent = data[lang].g1;
+      document.getElementById('g2-title').textContent = data[lang].g2;
+      document.getElementById('g3-title').textContent = data[lang].g3;
+      document.getElementById('g4-title').textContent = data[lang].g4;
+      document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    }
+  </script>
+</body>
+</html>
